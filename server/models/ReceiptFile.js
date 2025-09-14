@@ -6,9 +6,12 @@ const receiptFileSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  s3Key: {
-    type: String,
+  filePath: {
+    type: String, // local path on server (e.g., /uploads/receipts/12345.png)
     required: true
+  },
+  fileUrl: {
+    type: String, // optional public URL if you serve static files
   },
   originalName: {
     type: String,

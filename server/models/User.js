@@ -37,7 +37,6 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-userSchema.index({ email: 1 });
 
 userSchema.methods.comparePassword = async function(password) {
   return bcrypt.compare(password, this.passwordHash);
