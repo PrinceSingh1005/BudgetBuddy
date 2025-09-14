@@ -362,7 +362,7 @@ This project is licensed under the MIT License.
 
 ## 📞 Support
 
-If you have any questions or issues, please open an issue on GitHub or contact \[12prince345singh@gmail.com/63978].
+If you have any questions or issues, please open an issue on GitHub or contact \[12prince345singh@gmail.com/6397823309].
 
 ---
 
