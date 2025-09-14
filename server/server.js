@@ -23,7 +23,7 @@ const PORT = process.env.PORT || 3001;
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: ['https://budgetbuddy-1-cj4v.onrender.com' , process.env.FRONTEND_URL , 'http://localhost:3000'],
   credentials: true
 }));
 app.use(compression());
