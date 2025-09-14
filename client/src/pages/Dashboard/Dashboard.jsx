@@ -30,13 +30,15 @@ const cardVariants = {
 };
 
 // --- Reusable StatCard Component ---
-const StatCard = ({ title, value, change, changeType, icon: Icon, color, index }) => (
+const StatCard = ({ title, value, change, changeType, icon: Icon, color, index, isCurrency = true }) => (
     <motion.div initial="hidden" animate="visible" custom={index} variants={cardVariants} className="w-full">
         <Card className="p-4 sm:p-5 bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-shadow duration-300 rounded-xl">
             <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                     <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 truncate">{title}</p>
-                    <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">${(value || 0).toLocaleString()}</p>
+                    <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
+                        {isCurrency ? `$${(value || 0).toLocaleString()}` : (value || 0).toLocaleString()}
+                    </p>
                     {change !== undefined && (
                         <div className={`mt-2 flex items-center text-xs font-medium ${changeType === 'positive' ? 'text-emerald-600' : 'text-rose-600'}`}>
                             {changeType === 'positive' ? <ArrowUpRight className="w-4 h-4 mr-1" /> : <ArrowDownRight className="w-4 h-4 mr-1" />}
@@ -56,7 +58,7 @@ const StatCard = ({ title, value, change, changeType, icon: Icon, color, index }
 // --- Main Dashboard Component ---
 const Dashboard = () => {
     const [dateRange, setDateRange] = useState('thisMonth');
-
+    const [isCurrency, setIsCurrency] = useState(true);
     // Utility to get date range parameters
     const getDateParams = (range) => {
         const now = new Date();
@@ -154,7 +156,7 @@ const Dashboard = () => {
                         <StatCard index={1} title="Total Income" value={data.summary?.income?.total} change={12.5} changeType="positive" icon={TrendingUp} color="bg-emerald-500" />
                         <StatCard index={2} title="Total Expenses" value={data.summary?.expenses?.total} change={-8.2} changeType="negative" icon={TrendingDown} color="bg-rose-500" />
                         <StatCard index={3} title="Net Balance" value={data.summary?.balance} change={15.3} changeType="positive" icon={DollarSign} color="bg-sky-500" />
-                        <StatCard index={4} title="Transactions" value={(data.summary?.income?.count || 0) + (data.summary?.expenses?.count || 0)} icon={CreditCard} color="bg-violet-500" />
+                        <StatCard index={4} title="Transactions" value={(data.summary?.income?.count || 0) + (data.summary?.expenses?.count || 0)} icon={CreditCard} color="bg-violet-500" isCurrency = {false} />
                     </div>
 
                     {/* --- Charts --- */}
