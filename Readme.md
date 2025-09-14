@@ -8,7 +8,7 @@ A modern, responsive React frontend application for managing personal finances w
 
 ## ✨ Demo
 
-[Live Demo](https://budgetbuddy-1-cj4v.onrender.com)
+[Live Demo](https://budgetbuddy-1-cj4v.onrender.com)[Video Walkthrough](https://drive.google.com/file/d/1VoOSDjUt2l37cZqhhAGOkRh_EVAzjPwF/view?usp=sharing)
 
 ---
 
@@ -362,7 +362,7 @@ This project is licensed under the MIT License.
 
 ## 📞 Support
 
-If you have any questions or issues, please open an issue on GitHub or contact \[12prince345singh@gmail.com/63978].
+If you have any questions or issues, please open an issue on GitHub or contact \[12prince345singh@gmail.com/6397823309].
 
 ---
 
