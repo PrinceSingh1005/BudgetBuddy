@@ -148,7 +148,7 @@ const Register = () => {
 
           {/* Header */}
           <div className="text-center space-y-3">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Join WealthSync</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Join BudgetBuddy</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Create an account to start managing your finances with precision.
             </p>

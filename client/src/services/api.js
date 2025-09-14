@@ -3,7 +3,7 @@ import { is } from 'date-fns/locale';
 
 // Create axios instance
 const api = axios.create({
-  baseURL: '/api/v1',
+  baseURL: `${import.meta.env.BACKEND_URL || 'http://localhost:3001'}/api/v1`,
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
