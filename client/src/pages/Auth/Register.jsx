@@ -79,7 +79,7 @@ const Register = () => {
             </div>
             <div>
               <h2 className="text-4xl font-bold text-white tracking-tight">
-                WealthSync
+                BudgetBuddy
               </h2>
               <p className="mt-2 text-lg text-teal-100 font-medium">
                 Your journey to financial mastery starts here.
@@ -90,7 +90,7 @@ const Register = () => {
           <div className="bg-white/15 border border-white/20 rounded-xl p-8 shadow-2xl backdrop-blur-lg">
             <h3 className="text-xl font-semibold text-white">Take Control Today</h3>
             <p className="mt-3 text-sm text-teal-100/90">
-              Join WealthSync to track, analyze, and grow your wealth with ease.
+              Join BudgetBuddy to track, analyze, and grow your wealth with ease.
             </p>
             <ul className="mt-6 space-y-4 text-sm text-teal-100/80">
               <li className="flex items-center gap-3">
