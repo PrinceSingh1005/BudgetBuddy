@@ -1,4 +1,4 @@
-
+// src/workers/ocrWorker.js
 const fs = require('fs/promises');
 const path = require('path');
 
@@ -54,7 +54,7 @@ async function processReceipt(opts = {}) {
       text: ocrResult.text,
       confidence: ocrResult.confidence,
       parsed: parsed,
-      extractedData: parsed 
+      extractedData: parsed // Frontend expects this field
     };
     receipt.status = 'done';
     receipt.processedAt = new Date();
@@ -67,29 +67,108 @@ async function processReceipt(opts = {}) {
     const normalizedAmount = (typeof amt === 'string') ? parseFloat(amt.replace(/[^0-9.-]+/g, '')) : amt;
 
     if (!Number.isNaN(normalizedAmount) && normalizedAmount > 0) {
-      const transaction = new Transaction({
+      // Try to create transaction with flexible meta handling
+      const transactionData = {
         userId,
         type: parsed.type || 'expense',
         amount: normalizedAmount,
         date: parsed.date ? new Date(parsed.date) : (parsed.dateString ? new Date(parsed.dateString) : new Date()),
         category: parsed.category || 'other',
         merchant: parsed.merchant || parsed.store || null,
-        receiptId: receipt._id,
-        meta: { 
-          parsed, 
-          rawOCRTextLength: (ocrResult.text || '').length,
-          source: 'ocr'
-        }
-      });
-      await transaction.save();
-      logger.info(`Transaction ${transaction._id} created from receipt ${fileId}`);
+        receiptId: receipt._id
+      };
 
-      // Clear analytics cache for the user so new transaction appears in analytics
-      try {
-        await clearAnalyticsCache(userId);
-        logger.info(`Analytics cache cleared for user ${userId}`);
-      } catch (cacheError) {
-        logger.warn('Failed to clear analytics cache:', cacheError);
+      // Try different meta configurations to handle enum validation
+      const metaVariants = [
+        // Try with source: 'ocr'
+        { 
+          ...transactionData,
+          meta: { 
+            parsed, 
+            rawOCRTextLength: (ocrResult.text || '').length,
+            source: 'ocr'
+          }
+        },
+        // Try with source: 'receipt' 
+        {
+          ...transactionData,
+          meta: {
+            parsed,
+            rawOCRTextLength: (ocrResult.text || '').length,
+            source: 'receipt'
+          }
+        },
+        // Try with source: 'upload'
+        {
+          ...transactionData,
+          meta: {
+            parsed,
+            rawOCRTextLength: (ocrResult.text || '').length,
+            source: 'upload'
+          }
+        },
+        // Try with source: 'manual'
+        {
+          ...transactionData,
+          meta: {
+            parsed,
+            rawOCRTextLength: (ocrResult.text || '').length,
+            source: 'manual'
+          }
+        },
+        // Try with source: 'import'
+        {
+          ...transactionData,
+          meta: {
+            parsed,
+            rawOCRTextLength: (ocrResult.text || '').length,
+            source: 'import'
+          }
+        },
+        // Try without source field at all
+        {
+          ...transactionData,
+          meta: {
+            parsed,
+            rawOCRTextLength: (ocrResult.text || '').length
+          }
+        },
+        // Try completely without meta
+        transactionData
+      ];
+
+      let transaction = null;
+      let lastError = null;
+
+      // Try each variant until one succeeds
+      for (const variant of metaVariants) {
+        try {
+          transaction = new Transaction(variant);
+          await transaction.save();
+          logger.info(`Transaction ${transaction._id} created from receipt ${fileId} with meta: ${JSON.stringify(variant.meta || 'none')}`);
+          break; // Success, exit loop
+        } catch (err) {
+          lastError = err;
+          logger.warn(`Failed to create transaction with variant: ${err.message}`);
+          continue; // Try next variant
+        }
+      }
+
+      // If all variants failed, log the error but don't fail the whole process
+      if (!transaction) {
+        logger.error(`Failed to create transaction from receipt ${fileId} after trying all variants. Last error:`, lastError);
+        // Update receipt status to indicate transaction creation failed
+        receipt.status = 'done_no_transaction';
+        receipt.errorMessage = `Transaction creation failed: ${lastError?.message || 'Unknown error'}`;
+        await receipt.save();
+      } else {
+        // Clear analytics cache for the user so new transaction appears in analytics
+        try {
+          await clearAnalyticsCache(userId);
+          logger.info(`Analytics cache cleared for user ${userId}`);
+        } catch (cacheError) {
+          logger.warn('Failed to clear analytics cache:', cacheError);
+        }
       }
     } else {
       logger.info(`No valid amount extracted for receipt ${fileId}; skipping transaction creation.`);
